@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How lite-hits.js Works</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #fafafa;
+      color: #222;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+    }
+
+    .step svg {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      color: #2563eb;
+    }
+
+    code {
+      background: #f3f4f6;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: #555;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  
+  <h1>⚡ How lite-hits.js Works</h1>
+  <p><strong>lite-hits.js</strong> is a wrapper around <code>hits.sh</code>.  
+  It adds simple client-side logic (sessions, unique users, engagement) on top of the basic hit counter.</p>
+
+  <div class="steps">
+    <div class="step">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M4 4h16v16H4z"/>
+      </svg>
+      <div>
+        <strong>1. Page loads trigger an image request</strong><br>
+        Each time a page loads, the script inserts an invisible <code>&lt;img&gt;</code> with a <code>src</code> like  
+        <code>https://hits.sh/&lt;currentLocation&gt;/page.svg</code>.  
+        Loading this SVG increments the counter on <code>hits.sh</code>.
+      </div>
+    </div>
+
+    <div class="step">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M5 13l4 4L19 7"/>
+      </svg>
+      <div>
+        <strong>2. Session vs. user detection</strong><br>
+        The script uses browser storage:  
+        <ul>
+          <li><code>sessionStorage</code> → counts unique visits per browser session.</li>
+          <li><code>localStorage</code> → counts unique visitors per browser/device.</li>
+        </ul>
+        If no record is found, it triggers a new counter request (loading a fresh SVG) and stores a flag.  
+        If already present, no new request is sent — meaning we don’t even get an SVG this time.  
+        That’s by design: it prevents duplicate hits but also means there’s nothing to display.
+      </div>
+    </div>
+
+    <div class="step">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+      <div>
+        <strong>3. Engagement tracking</strong><br>
+        You can define an <code>engagementDuration</code> (in milliseconds, e.g. <code>10000</code> = 10s).  
+        Only if a visitor stays that long will the script trigger another <code>hits.sh</code> request, counting them as “engaged.”
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    ⚠️ <strong>Disclaimer:</strong><br>
+    <code>lite-hits.js</code> itself is fully transparent — you can read exactly what it does.  
+    It only decides *when* to send a counter request. All actual counting is handled by <code>hits.sh</code>.  
+    According to their docs they are open-source and claim not to log IPs or personal data, but that part is out of our control.  
+    In short: the wrapper cannot track you, and you don’t need to trust it — you can verify the script yourself.
+  </footer>
+
+  <h2 style="margin-top:2rem;">📄 Example Usage</h2>
+  <p>Drop this script into your page and configure what to count:</p>
+<style>
+  code.hl { color: #d4d4d4; background: #1e1e1e; padding: 1em; display: block;  white-space: pre; }
+  .c  { color: #6a9955; }  /* comment */
+  .k  { color: #569cd6; }  /* keyword / tag */
+  .s  { color: #ce9178; }  /* string */
+  .n  { color: #9cdcfe; }  /* name */
+</style>
+<code class="hl"><span class="c">&lt;!-- You can access window.hitsh = {pageloadCount, sessionCount, localCount, engagementCount}
+  Each is an object like { img: HTMLImageElement | {}, url: string, key: string } --&gt;</span>
+<span class="k">&lt;script</span> <span class="n">src=</span><span class="s">"./lite-hits.js"</span>
+  <span class="n">litehits-globalAs=</span><span class="s">"hitsh"</span>
+  <span class="n">litehits-count=</span><span class="s">'{
+    "pageloadCount": "true",
+    "sessionKey": "sessionCount",
+    "localKey": "localCount",
+    "engagementDuration": 10000
+}'</span><span class="k">&gt;&lt;/script&gt;</span></code>
+</body>
+</html>

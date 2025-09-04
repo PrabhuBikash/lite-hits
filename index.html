@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>lite-hits.js Demo</title>
+  <style>
+body {
+  margin: 2rem;
+  display: flex;
+  gap: 2rem;
+  min-height: 90vh;
+  font-family: system-ui;
+  background: #fafafa;
+  color: #222;
+}
+
+.stats {
+  flex: 1;
+  max-width: 400px;
+  background: #fff;
+  padding: 1.5rem 2rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.stats h1 {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.stat {
+  margin: 0.75rem 0;
+  font-size: 1rem;
+  justify-content: space-between;
+}
+
+.stat span {
+  font-weight: 500;
+  color: #2563eb;
+  display: block;
+}
+
+button {
+  margin-top: 1rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f3f4f6;
+}
+
+iframe {
+  flex: 1.2;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  min-height: 500px;
+}
+  </style>
+</head>
+<body>
+
+  <section class="stats">
+    <h1>🔥 lite-hits.js Demo</h1>
+
+    <p>This page uses <code>lite-hits.js</code> to track page loads, session, user, and engagement.</p>
+
+    <div class="stat">How lite-hits.js Works?<span id="working">how-it-works.html</span></div>
+    <div class="stat">Page Loads: <span id="pageloadCount">Loading…</span></div>
+    <div class="stat">Session Count: <span id="sessionCount">Loading…</span></div>
+    <div class="stat">User Count: <span id="userCount">Loading…</span></div>
+    <div class="stat">Engaged: <span id="engagement">Waiting…</span></div>
+
+    <div style="margin-top:20px;">
+      <button id="clearSession">Clear Session Storage</button>
+      <button id="clearLocal">Clear Local Storage</button>
+      <button id="clearBoth">Clear Both Session and Local Storage</button>
+    </div>
+  </section>
+
+  <iframe id="hitsIframe" src="./how-it-works.html" title="Hits.sh Live Stats"></iframe>
+
+<!-- Tracking Script -->
+<script
+  src="./lite-hits.js"
+  litehits-globalAs="hitsh"
+  litehits-shouldLog="true"
+  litehits-count='{
+    "pageloadCount": "true",
+    "sessionKey": "sessionCount",
+    "localKey": "localCount",
+    "engagementDuration": 10000
+  }'></script>
+
+<script>
+  const iframe = document.getElementById('hitsIframe');
+  const workingDetails = document.getElementById("working");
+  const workingDetailsUrl = './how-it-works.html';
+  workingDetails.textContent = workingDetailsUrl
+  workingDetails.onclick = () => iframe.src = workingDetailsUrl;
+
+  function updateLink(id, hitObject) {
+    const span = document.getElementById(id);
+    if (!span) return;
+
+    if (hitObject && hitObject.url) {
+      span.textContent = hitObject.url;
+      span.onclick = () => iframe.src = hitObject.url;
+      if (hitObject.img instanceof HTMLElement) span.parentElement.insertBefore(hitObject.img, span);
+      return true;
+    } else {
+      span.textContent = 'N/A';
+      span.onclick = null;
+      return false;
+    }
+  }
+
+  function refreshStats(reload = false){
+    updateLink('pageloadCount', window.hitsh.pageloadCount);
+    updateLink('sessionCount', window.hitsh.sessionCount);
+    updateLink('userCount', window.hitsh.localCount);
+    const intervalId = setInterval(() => {
+      const added = updateLink('engagement', window.hitsh.engagementCount);
+      if (added) clearInterval(intervalId);
+      }, 1000);
+    if (reload) location.reload();
+  }
+  refreshStats()
+    
+
+  function clearSession(){
+    try {
+      sessionStorage.removeItem(window.hitsh.sessionCount.key);
+      alert("Session storage cleared!");
+    } catch(e) {
+      alert("Error clearing session storage: " + e.message);
+    }
+  }
+  function clearLocal(){
+    try {
+      localStorage.removeItem(window.hitsh.localCount.key);
+      alert("Local storage cleared!");
+    } catch(e) {
+      alert("Error clearing local storage: " + e.message);
+    }
+  }
+  document.getElementById('clearSession').onclick = () => { clearSession(); refreshStats(reload = true); };
+  document.getElementById('clearLocal').onclick = () => { clearLocal(); refreshStats(reload = true); };
+  document.getElementById('clearBoth').onclick = () => { clearSession(); clearLocal(); refreshStats(reload = true); };
+</script>
