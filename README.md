@@ -63,10 +63,10 @@ window.hitsh = {
 ## ⚠️ Disclaimer
 
 * `lite-hits.js` is **fully transparent** — you can read the exact script you use.
-* It only decides *when* to send a hit request.
+* It only decides *when* to send a GET request.
 * Counting is handled entirely by [hits.sh](https://hits.sh).
 * Its author explicitly states [they do not log IP addresses](https://github.com/StevenBlack/hosts/issues/2252), and the project is [open-source](https://github.com/silentsoft/hits).
-* Still, since the backend is outside this wrapper, privacy ultimately depends on that service.
+* However, since all counting happens on their backend, using it still requires some trust in their implementation.
 
 In short:
 - The wrapper cannot track you, and you don’t need to trust it — you can verify the code yourself.

@@ -109,10 +109,12 @@
 
   <footer>
     ⚠️ <strong>Disclaimer:</strong><br>
-    <code>lite-hits.js</code> itself is fully transparent — you can read exactly what it does.  
-    It only decides *when* to send a counter request. All actual counting is handled by <code>hits.sh</code>.  
-    According to their docs they are open-source and claim not to log IPs or personal data, but that part is out of our control.  
-    In short: the wrapper cannot track you, and you don’t need to trust it — you can verify the script yourself.
+    <code>lite-hits.js</code> itself is <a href="https://github.com/PrabhuBikash/lite-hits/blob/main/lite-hits.js">fully transparent</a> — you can read exactly what it does.  
+    It only decides *when* to send a counter request. All actual counting is handled by <a href="https:hits.sh" target="_blank">hits.sh</a>.
+    The service is <a href="https://github.com/silentsoft/hits" target="_blank">open-source</a>, and its author explicitly states 
+    <a href="https://github.com/StevenBlack/hosts/issues/2252" target="_blank"> they do not harvest IP addresses</a>.
+    However, like any external service, you must ultimately **trust their backend** — we cannot independently guarantee how requests are handled.
+    In short: the wrapper cannot track you, and you don’t need to trust it — you can verify the script yourself. Whether you trust hits.sh is your own decision.
   </footer>
 
   <h2 style="margin-top:2rem;">📄 Example Usage</h2>
@@ -136,3 +138,4 @@
 }'</span><span class="k">&gt;&lt;/script&gt;</span></code>
 </body>
 </html>
+
