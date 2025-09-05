@@ -1,7 +1,16 @@
 (function () {
   const SCRIPT = document.currentScript;
   const SHOULD_LOG = SCRIPT.getAttribute("litehits-shouldLog") !== "false";
-  const VALUE_DICT = SCRIPT.getAttribute("litehits-globalAs");
+  const logToConsole = (...args) => {
+    if (SHOULD_LOG) console.log("[lite-hits]", ...args);
+  };
+
+  const BASE_PATH = SCRIPT.getAttribute("litehits-basePath");
+  if (!BASE_PATH) {
+    logToConsole("base path is not mentioned")
+    return;
+  };
+
   let TO_COUNT = {};
   try {
     TO_COUNT = JSON.parse(SCRIPT.getAttribute("litehits-count") || "{}");
@@ -9,16 +18,24 @@
     console.warn("Invalid JSON in litehits-count:", e);
   }
 
-  const BASE_PATH = window.location.hostname + window.location.pathname;
+  let IMG_PROPERTIES = {};
+  try {
+    IMG_PROPERTIES = JSON.parse(SCRIPT.getAttribute("litehits-imgProperties") || "{}");
+  } catch (e) {
+    console.warn("Invalid JSON in litehits-imgProperties:", e);
+  }
+  const VALUE_DICT = SCRIPT.getAttribute("litehits-globalAs");
 
   const hit = (key) => {
     const url = `https://hits.sh/${BASE_PATH}/${key}`
     const img = new Image();
+    img.referrerPolicy = 'no-referrer';
+    const { style, ...rest } = IMG_PROPERTIES;
+    Object.assign(img, rest);
+    if (style && typeof style === 'object') Object.assign(img.style, style);
     img.src = `${url}.svg`;
+    img.alt = `svg for ${key}`
     return {img, url, key}
-  };
-  const logToConsole = (...args) => {
-    if (SHOULD_LOG) console.log("[lite-hits]", ...args);
   };
   
   let pageloadCount, sessionCount, localCount, engagementCount;

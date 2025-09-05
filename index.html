@@ -71,7 +71,7 @@ iframe {
 
     <p>This page uses <code>lite-hits.js</code> to track page loads, session, user, and engagement.</p>
 
-    <div class="stat">How lite-hits.js Works?<span id="working">how-it-works.html</span></div>
+    <div class="stat">How lite-hits.js Works?<span id="working" style="cursor: pointer;"></span></div>
     <div class="stat">Page Loads: <span id="pageloadCount">Loading…</span></div>
     <div class="stat">Session Count: <span id="sessionCount">Loading…</span></div>
     <div class="stat">User Count: <span id="userCount">Loading…</span></div>
@@ -86,9 +86,10 @@ iframe {
 
   <iframe id="hitsIframe" src="./how-it-works.html" title="Hits.sh Live Stats"></iframe>
 
-<!-- Tracking Script -->
+<!-- Analytics Script -->
 <script
   src="./lite-hits.js"
+  litehits-basePath="analyticsurl"
   litehits-globalAs="hitsh"
   litehits-shouldLog="true"
   litehits-count='{
@@ -107,18 +108,19 @@ iframe {
 
   function updateLink(id, hitObject) {
     const span = document.getElementById(id);
-    if (!span) return;
+    if (!span || !hitObject?.url) return false;
 
-    if (hitObject && hitObject.url) {
-      span.textContent = hitObject.url;
-      span.onclick = () => iframe.src = hitObject.url;
-      if (hitObject.img instanceof HTMLElement) span.parentElement.insertBefore(hitObject.img, span);
-      return true;
-    } else {
-      span.textContent = 'N/A';
-      span.onclick = null;
-      return false;
-    }
+    span.textContent = hitObject.url;
+    span.dataset.consent_given = "false";
+    span.style.cursor = "pointer";
+    span.onclick = () => {
+      if (span.dataset.consent_given === "true" || confirm("Hey, This site (hits.sh) uses google analytics, do you want to procede?")) {
+        span.dataset.consent_given = "true";
+        iframe.src = hitObject.url;
+      };
+    };
+    if (hitObject.img instanceof HTMLElement) span.parentElement.insertBefore(hitObject.img, span);
+    return true;
   }
 
   function refreshStats(reload = false){
@@ -131,7 +133,7 @@ iframe {
       }, 1000);
     if (reload) location.reload();
   }
-  refreshStats()
+  refreshStats();
     
 
   function clearSession(){
