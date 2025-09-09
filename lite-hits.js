@@ -43,7 +43,7 @@
   function storageHandler(storage, key, message){
     if (!key) return;
     try {
-      count = JSON.parse(storage.getItem(TO_COUNT.sessionKey))
+      count = JSON.parse(storage.getItem(key))
       if (!count){
         count = hit(key);
         storage.setItem(key, JSON.stringify(count));
