@@ -93,9 +93,9 @@ iframe {
   litehits-globalAs="hitsh"
   litehits-shouldLog="true"
   litehits-count='{
-    "pageloadCount": "true",
-    "sessionKey": "sessionCount",
-    "localKey": "localCount",
+    "pageloadKey": "pageLoaded",
+    "sessionKey": "sessionCounted",
+    "localKey": "localCounted",
     "engagementDuration": 10000
   }'></script>
 
@@ -114,7 +114,7 @@ iframe {
     span.dataset.consent_given = "false";
     span.style.cursor = "pointer";
     span.onclick = () => {
-      if (span.dataset.consent_given === "true" || confirm("Hey, This site (hits.sh) uses google analytics, do you want to procede?")) {
+      if (span.dataset.consent_given === "true" || confirm("Hey, This will load an external site: hits.sh, do you want to procede?")) {
         span.dataset.consent_given = "true";
         iframe.src = hitObject.url;
       };

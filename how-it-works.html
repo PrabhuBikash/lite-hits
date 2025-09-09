@@ -16,6 +16,7 @@
     h1 {
       font-size: 1.6rem;
       margin-bottom: 1rem;
+      margin-top:2rem;
     }
 
     .steps {
@@ -49,7 +50,7 @@
       font-size: 0.9rem;
     }
 
-    footer {
+    .disclaimer {
       margin-top: 2rem;
       font-size: 0.85rem;
       color: #555;
@@ -60,7 +61,7 @@
 </head>
 <body>
   
-  <h1>⚡ How lite-hits.js Works</h1>
+  <h1 style="margin-top:0rem;">⚡ How lite-hits.js Works</h1>
   <p><strong>lite-hits.js</strong> is a wrapper around <code>hits.sh</code>.  
   It adds simple client-side logic (sessions, unique users, engagement) on top of the basic hit counter.</p>
 
@@ -91,6 +92,8 @@
         If no record is found, it triggers a new counter request (loading a fresh SVG) and stores a flag.  
         If already present, no new request is sent — meaning we don’t even get an SVG this time.  
         That’s by design: it prevents duplicate hits but also means there’s nothing to display.
+        And we can't store the image in session/local storage cause they only store strings
+        and we can't cache it or save it in some other ways due to CORS restrictions
       </div>
     </div>
 
@@ -107,7 +110,7 @@
     </div>
   </div>
 
-  <footer>
+  <p class="disclaimer">
     ⚠️ <strong>Disclaimer:</strong><br>
     <code>lite-hits.js</code> itself is <a href="https://github.com/PrabhuBikash/lite-hits/blob/main/lite-hits.js">fully transparent</a> — you can read exactly what it does.  
     It only decides *when* to send a counter request. All actual counting is handled by <a href="https:hits.sh" target="_blank">hits.sh</a>.
@@ -115,9 +118,9 @@
     <a href="https://github.com/StevenBlack/hosts/issues/2252" target="_blank"> they do not harvest IP addresses</a>.
     However, like any external service, you must ultimately **trust their backend** — we cannot independently guarantee how requests are handled.
     In short: the wrapper cannot track you, and you don’t need to trust it — you can verify the script yourself. Whether you trust hits.sh is your own decision.
-  </footer>
+  </p>
 
-  <h2 style="margin-top:2rem;">📄 Example Usage</h2>
+  <h1>📄 Example Usage</h1>
   <p>Drop this script into your page and configure what to count:</p>
 <style>
   code.hl { color: #d4d4d4; background: #1e1e1e; padding: 1em; display: block;  white-space: pre; }
@@ -132,10 +135,108 @@
   <span class="n">litehits-basePath=</span><span class="s">"analyticsurl"</span>
   <span class="n">litehits-globalAs=</span><span class="s">"hitsh"</span>
   <span class="n">litehits-count=</span><span class="s">'{
-    "pageloadCount": "true",
-    "sessionKey": "sessionCount",
-    "localKey": "localCount",
+    "pageloadKey": "pageLoaded",
+    "sessionKey": "sessionCounted",
+    "localKey": "localCounted",
     "engagementDuration": 10000
-  }'</span><span class="k">&gt;&lt;/script&gt;</span></code>
+  }'</span><span class="k">&gt;&lt;/script&gt;</span>
+</code>
+
+  <h1>🛡️ Protecting Privacy Further</h1>
+  <p>
+    <code>lite-hits.js</code> is designed to be minimal and avoid invasive tracking, 
+    but you can take extra steps to limit what information <code>hits.sh</code> gets:
+  </p>
+
+  <div class="steps">
+    <div class="step">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M20 12l-8-8H4v8l8 8 8-8z"/>
+      </svg>
+      <div>
+        <strong>1. Use a custom <code>basePath</code></strong><br>
+        Instead of sending the real URL, define another url or randomstring.
+        This avoids exposing your actual site url/referrer.
+        You can hash the path (with a salt if desired) before using it as <code>basePath</code>, but make it look like a url (add a <code>.</code>)
+        also check if the string qualifies as a url and is not use by anyone from <a href="https://hits.sh/">hits.sh</a>'s website.<br>
+        <code>lite-hits.js</code> already sets <code>referrerPolicy="no-referrer"</code>,preventing your page’s URL from leaking in HTTP headers.
+      </div>
+    </div>
+
+    <div class="step">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M12 4v16m8-8H4"/>
+      </svg>
+      <div>
+        <strong>2. Remaining data</strong><br>
+        Even with a custom <code>basePath</code>, some data always goes to <code>hits.sh</code>:
+        <table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse; width: 100%; font-size: 0.9em; margin-top: 0.5em;">
+          <thead>
+            <tr>
+              <th>What is sent</th>
+              <th>What we know</th>
+              <th>What it can be used for</th>
+              <th>Mitigation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>IP address</td>
+              <td><a href="https://github.com/StevenBlack/hosts/issues/2252" target="_blank">They claim not logged</a></td>
+              <td>Geolocation, unique visitor count</td>
+              <td title="you still need to trust VPN / Tor / proxy">use trusted VPN / Tor / proxy</td>
+            </tr>
+            <tr>
+              <td>Timestamp</td>
+              <td>Logged by server</td>
+              <td>Activity patterns</td>
+              <td>consider batch/proxy requests</td>
+            </tr>
+            <tr>
+              <td>User-Agent</td>
+              <td>Sent by browser</td>
+              <td>Fingerprinting: OS, browser, device</td>
+              <td>Privacy browser / UA spoofing</td>
+            </tr>
+            <tr>
+              <td>Accept headers</td>
+              <td>Sent by browser</td>
+              <td>Minor fingerprinting</td>
+              <td>Privacy browsers</td>
+            </tr>
+            <tr>
+              <td>TLS / connection metadata</td>
+              <td>Sent by browser</td>
+              <td>Fingerprinting via cipher, TLS version</td>
+              <td>Tor / privacy VPN</td>
+            </tr>
+          </tbody>
+        </table>
+          Or you can just ask user to give consent for these else don't use analytics.
+      </div>
+    </div>
+
+    <div class="step">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <rect x="4" y="4" width="16" height="6" rx="1" ry="1"/>
+        <rect x="4" y="14" width="16" height="6" rx="1" ry="1"/>
+        <circle cx="8" cy="7" r="1"/>
+        <circle cx="8" cy="17" r="1"/>
+      </svg>
+      <div>
+        <strong>3. Self-host</strong><br>
+        Even if you avoid analytics, your hosting provider can still log requests (IP, time, user-agent) since users must connect to fetch your site.  
+        If you want full control, you need to run your site on your own server.  
+        In that case you could also adapt <code>lite-hits.js</code> to send requests to your own endpoint instead of <code>hits.sh</code> - but you probably won’t even need it.  
+        The key point is: with self-hosting, you decide what to log (or not log), and you must consciously choose not to collect data.
+      </div>
+    </div>
+  </div>
+
+  <p class="disclaimer">
+    ⚠️ <strong>Disclaimer:</strong><br>
+    We couldn't find any instance where <code>hits.sh</code> explicitly claims to be "privacy-focused" 
+    In fact, their <a href="https://hits.sh/">landing page</a> uses other analytics tools (e.g., <code>Google Analytics</code>), which you can confirm in your browser's network inspector.
+  </p>
 </body>
 </html>

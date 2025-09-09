@@ -39,8 +39,7 @@ window.hitsh = {
 }
 ```
 
-## 🛠 How It Works
-
+## [🛠 How It Works](https://prabhubikash.github.io/lite-hits/how-it-works.html)
 1. **Page loads trigger an image request**  
    Each load inserts an invisible `<img>` with
    `https://hits.sh/<hostname+pathname>/page.svg`.
