@@ -22,6 +22,7 @@ Copy–paste this into your HTML:
     "localKey": "myuser",
     "engagementDuration": 10000
   }'
+  litehits-basePath="analyticsurl"
   litehits-globalAs="hitsh">
 </script>
 ```
@@ -39,7 +40,7 @@ window.hitsh = {
 }
 ```
 
-## [🛠 How It Works](https://prabhubikash.github.io/lite-hits/how-it-works.html)
+## 🛠 How It Works
 1. **Page loads trigger an image request**  
    Each load inserts an invisible `<img>` with
    `https://hits.sh/<hostname+pathname>/page.svg`.
@@ -56,6 +57,8 @@ window.hitsh = {
 3. **Engagement tracking**  
    You can define an `engagementDuration` (in milliseconds, e.g. `10000` = 10s).  
    Only if a visitor stays that long will the script trigger another `hits.sh` request, counting them as “engaged.”
+
+for more info consider checking: https://prabhubikash.github.io/lite-hits/how-it-works.html
 
 ---
 
