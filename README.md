@@ -17,7 +17,7 @@ Copy–paste this into your HTML:
 ```html
 <script src="https://prabhubikash.github.io/lite-hits/lite-hits.js" defer
   litehits-count='{
-    "pageloadCount": "true",
+    "pageloadKey": "mypage",
     "sessionKey": "mysession",
     "localKey": "myuser",
     "engagementDuration": 10000
@@ -43,7 +43,7 @@ window.hitsh = {
 ## 🛠 How It Works
 1. **Page loads trigger an image request**  
    Each load inserts an invisible `<img>` with
-   `https://hits.sh/<hostname+pathname>/page.svg`.
+   `https://hits.sh/<litehits-basePath>/<pageloadKey>.svg`.
    Loading this increments the counter on `hits.sh`.
 
 2. **Session vs. user detection**
@@ -72,6 +72,6 @@ for more info consider checking: https://prabhubikash.github.io/lite-hits/how-it
 
 In short:
 - The wrapper cannot track you, and you don’t need to trust it — you can verify the code yourself.
-- Whether you trust hits.sh is your own decision.
+- Whether you trust [hits.sh](https://hits.sh) is your own decision.
 
 ---
